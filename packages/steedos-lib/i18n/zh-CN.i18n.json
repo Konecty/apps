@@ -152,6 +152,7 @@
 	"apps_url": "链接",
 	"apps_auth_name": "验证域名",
 	"apps_on_click": "链接脚本",
+    "apps_is_use_ie": "使用IE打开",
 	"apps_iconURL": "图标链接",
 	"apps_icon": "图标",
 	"apps_space_sort": "排序号",
@@ -261,6 +262,7 @@
     "space_users_error_email_readonly": "用户邮箱不允许修改",
     "space_users_error_space_readonly": "无法修改工作区",    
     "space_users_error_user_readonly": "无法修改用户",
+    "space_users_error_remove_space_owner": "不能删除工作区拥有者",
     
     "spaces_error_login_required": "login必填",
     "spaces_error_space_owner_only": "您不是该工作区的所有者",
@@ -286,6 +288,15 @@
 
 	"users_error": {
 		"steedos_id_required": "Steedos ID 不能为空"
-	}
+	},
 
+    "bg_body": "背景",
+    "bg_body_setting": "设置背景",
+    "remove": "清空",
+    "coreform_select_user_title": "请选择人员",
+    "coreform_select_org_title": "请选择部门",
+
+    "profile_save_bg_setting": "保存背景",
+    "profile_upload_image": "上传图片",
+    "profile_save_bg_suc": "背景保存成功"
 }

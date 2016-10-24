@@ -27,6 +27,10 @@ function handerOrg(orgs) {
 
     node.text = org.name;
 
+    node.data = {};
+
+    node.data.fullname = org.fullname;
+
     node.id = org._id;
 
     node.state = {};
@@ -57,6 +61,9 @@ function handerOrg(orgs) {
 
 CFDataManager.setContactModalValue = function(value) {
   $("#cf_contact_modal").data("values", value);
+  if(value && value instanceof Array){
+    TabularTables.cf_tabular_space_user.customData.defaultValues = value.getProperty("id");
+  }
 }
 
 CFDataManager.getContactModalValue = function() {
@@ -223,6 +230,7 @@ CFDataManager.getRoot = function() {
     fields: {
       _id: 1,
       name: 1,
+      fullname: 1,
       parent: 1,
       children: 1,
       childrens: 1
@@ -238,6 +246,7 @@ CFDataManager.getChild = function(parentId) {
     fields: {
       _id: 1,
       name: 1,
+      fullname: 1,
       parent: 1,
       children: 1,
       childrens: 1

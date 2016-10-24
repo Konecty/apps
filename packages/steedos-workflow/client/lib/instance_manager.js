@@ -572,7 +572,8 @@ InstanceManager.saveIns = function() {
         var selected_applicant = $("input[name='ins_applicant']")[0].dataset.values;
         if (instance.applicant != selected_applicant) {
           var space_id = instance.space;
-          var applicant = db.space_users.find({
+          
+          var applicant = SteedosDataManager.spaceUserRemote.findOne({
             space: space_id,
             user: selected_applicant
           }, {
@@ -580,9 +581,9 @@ InstanceManager.saveIns = function() {
               organization: 1,
               name: 1
             }
-          }).fetch()[0];
+          });
           var org_id = applicant.organization;
-          var organization = db.organizations.findOne(org_id, {
+          var organization = SteedosDataManager.organizationRemote.findOne(org_id, {
             fields: {
               name: 1,
               fullname: 1
@@ -670,7 +671,7 @@ InstanceManager.submitIns = function() {
         var selected_applicant = $("input[name='ins_applicant']")[0].dataset.values;
         if (instance.applicant != selected_applicant) {
           var space_id = instance.space;
-          var applicant = db.space_users.find({
+          var applicant = SteedosDataManager.spaceUserRemote.findOne({
             space: space_id,
             user: selected_applicant
           }, {
@@ -678,9 +679,9 @@ InstanceManager.submitIns = function() {
               organization: 1,
               name: 1
             }
-          }).fetch()[0];
+          });
           var org_id = applicant.organization;
-          var organization = db.organizations.findOne(org_id, {
+          var organization = SteedosDataManager.organizationRemote.findOne(org_id, {
             fields: {
               name: 1,
               fullname: 1
@@ -1092,4 +1093,18 @@ InstanceManager.unlockAttach = function(file_id) {
       'metadata.locked_by_name': ''
     }
   });
+}
+
+// 申请单转发
+InstanceManager.forwardIns = function(instance_id, space_id, flow_id) {
+  Meteor.call('forward_instance', instance_id, space_id, flow_id, function(error, result) {
+    if (error) {
+      toastr.error(error.message);
+    }
+
+    if (result) {
+      FlowRouter.go("/workflow/space/" + space_id + "/draft/" + result);
+    }
+
+  })
 }

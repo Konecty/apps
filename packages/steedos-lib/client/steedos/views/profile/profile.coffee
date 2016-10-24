@@ -31,6 +31,42 @@ Template.profile.helpers
 
     return isPrimary
 
+  accountBgBodyValue: ()->
+    return Steedos.getAccountBgBodyValue()
+
+  isCurrentBgUrlActive: (url)->
+    return if url == Steedos.getAccountBgBodyValue().url then "active" else ""
+
+  isCurrentBgUrlWaitingSave: (url)->
+    return if url == Session.get("waiting_save_profile_bg") then "btn-warning" else "btn-default"
+
+  getAvatarFilePath: (avatar)->
+    return '/api/files/avatars/' + avatar
+
+  bgBodys:[{
+    name:"birds",
+    url:"/packages/steedos_theme/client/background/birds.jpg"
+  },{
+    name:"fish",
+    url:"/packages/steedos_theme/client/background/fish.jpg"
+  },{
+    name:"books",
+    url:"/packages/steedos_theme/client/background/books.jpg"
+  },{
+    name:"cloud",
+    url:"/packages/steedos_theme/client/background/cloud.jpg"
+  },{
+    name:"sea",
+    url:"/packages/steedos_theme/client/background/sea.jpg"
+  },{
+    name:"flower",
+    url:"/packages/steedos_theme/client/background/flower.jpg"
+  },{
+    name:"beach",
+    url:"/packages/steedos_theme/client/background/beach.jpg"
+  }]
+
+
 Template.profile.onRendered ->
 
 
@@ -58,17 +94,20 @@ Template.profile.onCreated ->
         else
           toastr.success t('Password_changed_successfully')
           instance.clearForm();
-          return callback()
+          if callback
+            return callback()
+          else
+            return undefined
     else
       toastr.error t('Confirm_Password_Not_Match')
 
-    
+
 Template.profile.events
 
   'click .change-password': (e, t) ->
     t.changePassword()
 
-  'change .avatar-file': (event, template) ->
+  'change .change-avatar .avatar-file': (event, template) ->
     file = event.target.files[0];
     fileObj = db.avatars.insert file
     # Inserted new doc with ID fileObj._id, and kicked off the data upload using HTTP
@@ -131,6 +170,46 @@ Template.profile.events
                 $(document.body).removeClass('loading')
                 swal t("email_set_primary_success"), "", "success"
 
+  'click #bg_body a.thumbnail': (event)->
+    bg = $(event.currentTarget).attr("bg")
+    $("#bg_body button.btn-save-bg").attr("bg",bg)
+    $("body").css("backgroundImage","url(#{bg})")
+    Session.set("waiting_save_profile_bg",bg)
+
+  'click #bg_body button.btn-save-bg': (event)->
+    bg = $(event.currentTarget).attr("bg")
+    accountBgBodyValue = Steedos.getAccountBgBodyValue()
+    unless accountBgBodyValue
+      accountBgBodyValue = {}
+    accountBgBodyValue.url = bg
+    Meteor.call 'setKeyValue', 'bg_body', accountBgBodyValue, (error, is_suc) ->
+      if is_suc
+        Session.set("waiting_save_profile_bg","")
+        toastr.success t('profile_save_bg_suc')
+      else
+        console.error error
+        toastr.error(error)
+
+  'change #bg_body .btn-upload-bg-file .avatar-file': (event, template) ->
+    oldAvatar = Steedos.getAccountBgBodyValue().avatar
+    if oldAvatar
+      Session.set("waiting_save_profile_bg",'/api/files/avatars/' + oldAvatar)
+    file = event.target.files[0];
+    fileObj = db.avatars.insert file
+    fileId = fileObj._id
+    bg = "/api/files/avatars/#{fileId}"
+    console.log "the upload bg file url is:#{bg}"
+    setTimeout(()->
+      $("body").css("backgroundImage","url(#{bg})")
+      Meteor.call 'setKeyValue', 'bg_body', {'url':bg,'avatar':fileId}, (error, is_suc) ->
+        if is_suc
+          Session.set("waiting_save_profile_bg","")
+          toastr.success t('profile_save_bg_suc')
+        else
+          console.error error
+          toastr.error(error)
+    ,3000)
+
 
 Meteor.startup ->
   
@@ -143,8 +222,6 @@ Meteor.startup ->
           setTimeout ->
             Meteor._reload.reload()
           , 1000
-        else
-          FlowRouter.go("/")
 
       onError: (formType, error) ->
         if error.reason

@@ -1,14 +1,20 @@
-body {
+body{
     background-color: #222d32;
-    background: url('/packages/steedos_theme-qhd/client/background/sea.jpg');
+    background-size: cover;
+    background-image: url('/packages/steedos_theme/client/background/sea.jpg');
+}
+.bg-body {
+    background-color: #222d32;
     background-size: cover;
 }
 
 
 .skin-green {
-    a {
-        color: white;
-    }
+    .at-form {
+        a {
+            color: white;
+        }
+    }    
     .wrapper {
         background: transparent;
     }
@@ -18,22 +24,22 @@ body {
     }
 
     .main-sidebar {
-        background: rgba(34,45,50,0.7);
+        background: rgba(34,45,50,0.9);
 
         .sidebar-menu {
             .header-workflow {
-                display: none;
+                overflow: visible;
             }
         }
         .sidebar-menu > li.header {
             color: #d8d8d8;
             background: rgba(26, 34, 38, 0.3);
         }
-        .sidebar-menu > li > a {
-            color: #ffffff;
-        }
         .sidebar-menu > li:hover > a, .sidebar-menu > li.active > a {
-            background: rgba(26, 34, 38, 0.5);
+            background: rgba(26, 34, 38, 0.9);
+        }
+        .sidebar-menu > .pull-right-container {
+            background: transparent
         }
 
     }

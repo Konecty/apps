@@ -1,4 +1,4 @@
-Template.cf_organization_modal.helpers 
+Template.cf_organization_modal.helpers
 	footer_display: (multiple)->
 		if !multiple
 			return "display:none";
@@ -11,7 +11,7 @@ Template.cf_organization_modal.helpers
 
 	isMobile: ()->
 		return Steedos.isMobile();
-		
+
 
 	orgName: ()->
 		orgId = Session.get("cf_selectOrgId");
@@ -26,13 +26,23 @@ Template.cf_organization_modal.events
 		values = CFDataManager.getOrganizationModalValue();
 
 		target[0].dataset.values = values.getProperty("id").toString();
-		
-		target.val(values.getProperty("name").toString()).trigger('change');
-		
+
+		target.val(values.getProperty("fullname").toString()).trigger('change');
+
+		Modal.hide("cf_organization_modal");
+
+		Modal.allowMultiple = false;
+
+	'click #remove': (event, template) ->
+		target = $("#"+template.data.targetId)
+
+		target[0].dataset.values = "";
+
+		target.val("").trigger('change');
+
 		Modal.hide("cf_organization_modal");
 
 		Modal.allowMultiple = false;
 
 Template.cf_organization_modal.onRendered ->
     CFDataManager.handerOrganizationModalValueLabel();
-

@@ -173,6 +173,23 @@
     "flows_instance_template": "表单模板",
 
     "workflow_attach_unlock": "解锁",
-    "workflow_attach_locked_by": "已被 %s 锁定"
+    "workflow_attach_locked_by": "已被 %s 锁定",
+
+    "workflow_select_an_app": "选择应用",
+    "workflow_suggestion_placeholder": "请填写意见",
+
+    "instance_opinion_title": "批示",
+    "instance_opinion_input": "请输入常用意见",
+    "instance_opinion_add_success": "添加成功!",
+    "instance_opinion_remove_success": "移除成功!",
+    "instance_opinion_error": "出错了",
+
+    "instance_opinion_exists": "常用意见已存在",
+    "instance_opinion_add_tip": "点击‘+’按钮添加常用意见",
+
+    "instance_forward_title": "转发",
+
+    "form_field_checkbox_yes": "是",
+    "form_field_checkbox_no": "否"
 
 }

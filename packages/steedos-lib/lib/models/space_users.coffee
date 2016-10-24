@@ -81,8 +81,8 @@ db.space_users.helpers
 		return space?.name
 	organization_name: ->
 		if this.organizations
-			organizations = db.organizations.find({_id: {$in: this.organizations}}).fetch()
-			return organizations?.getProperty('fullname').join(',')
+			organizations = SteedosDataManager.organizationRemote.find({_id: {$in: this.organizations}}, {fields: {fullname: 1}})
+			return organizations?.getProperty('fullname').join('<br/>')
 		return
 
 if (Meteor.isServer) 
@@ -145,9 +145,10 @@ if (Meteor.isServer)
 
 	db.space_users.after.insert (userId, doc) ->
 		console.log("db.space_users_after.insert");
-		if doc.organization
-			organizationObj = db.organizations.findOne(doc.organization)
-			organizationObj.updateUsers();
+		if doc.organizations
+			doc.organizations.forEach (org)->
+				organizationObj = db.organizations.findOne(org)
+				organizationObj.updateUsers();
 
 		db.users_changelogs.direct.insert
 			operator: userId
@@ -193,12 +194,14 @@ if (Meteor.isServer)
 		# 		$set:
 		# 			name: doc.name
 
-		if modifier.$set.organization
-			organizationObj = db.organizations.findOne(modifier.$set.organization)
-			organizationObj.updateUsers();
-		if this.previous.organization
-			organizationObj = db.organizations.findOne(this.previous.organization)
-			organizationObj.updateUsers();
+		if modifier.$set.organizations
+			modifier.$set.organizations.forEach (org)->
+				organizationObj = db.organizations.findOne(org)
+				organizationObj.updateUsers();
+		if this.previous.organizations
+			this.previous.organizations.forEach (org)->
+				organizationObj = db.organizations.findOne(org)
+				organizationObj.updateUsers();
 
 		if modifier.$set.hasOwnProperty("user_accepted")
 			if this.previous.user_accepted != modifier.$set.user_accepted
@@ -219,12 +222,17 @@ if (Meteor.isServer)
 		if space.admins.indexOf(userId) < 0
 			throw new Meteor.Error(400, "space_users_error_space_admins_only");
 
+		# 不能删除当前工作区的拥有者
+		if space.owner == doc.user
+			throw new Meteor.Error(400, "space_users_error_remove_space_owner");
+
 
 	db.space_users.after.remove (userId, doc) ->
 		console.log("db.space_users.after.remove");
-		if doc.organization
-			organizationObj = db.organizations.findOne(doc.organization)
-			organizationObj.updateUsers();
+		if doc.organizations
+			doc.organizations.forEach (org)->
+				organizationObj = db.organizations.findOne(org)
+				organizationObj.updateUsers();
 
 		db.users_changelogs.direct.insert
 			operator: userId

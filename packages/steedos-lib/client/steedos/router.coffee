@@ -17,12 +17,14 @@ FlowRouter.route '/',
         if (!Meteor.userId())
             FlowRouter.go "/steedos/sign-in";
         else 
-            appId = Steedos.getAppId()
-            if !appId
-                FlowRouter.go("/steedos/springboard")
+            firstApp = Steedos.getSpaceFirstApp()
+            if !firstApp
+                # 这里等待db.apps加载完成后，找到并进入第一个spaceApps的路由，在apps加载完成前显示loading界面
+                BlazeLayout.render 'steedosLoading'
+                $("body").addClass('loading')
             else
-                FlowRouter.go("/app/" + appId);
-        
+                FlowRouter.go("/app/" + firstApp._id);
+
 
 # FlowRouter.route '/steedos', 
 #   action: (params, queryParams)->
@@ -141,6 +143,18 @@ FlowRouter.route '/app/:app_id',
             return
 
         Steedos.setAppId params.app_id
+        if app.is_use_ie
+            if Steedos.isNode()
+                exec = nw.require('child_process').exec
+                path = "api/app/sso/#{params.app_id}?authToken=#{Accounts._storedLoginToken()}&userId=#{Meteor.userId()}"
+                open_url = Meteor.absoluteUrl(path)
+                cmd = "start iexplore.exe \"#{open_url}\""
+                exec cmd, (error, stdout, stderr) ->
+                    if error
+                        toastr.error error
+                    return
+            FlowRouter.go "/app/#{params.app_id}/opened"
+            return
         on_click = app.on_click
         if on_click
             # 这里执行的是一个不带参数的闭包函数，用来避免变量污染
